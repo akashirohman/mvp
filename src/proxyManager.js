@@ -2,7 +2,7 @@
 const { scrapeProxies } = require('./proxyScraper');
 const { validateProxy } = require('./proxyValidator');
 const config = require('./config');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 
 class ProxyManager {
     constructor() {
