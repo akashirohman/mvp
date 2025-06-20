@@ -1,7 +1,7 @@
 // src/main.js
 const readlineSync = require('readline-sync');
 const chalk = require('chalk').default;
-const ora = require('ora');
+const ora = require('ora').default;
 const proxyManager = require('./proxyManager');
 const googleSearcher = require('./googleSearcher');
 const { startVisitorThread } = require('./visitorCore');
