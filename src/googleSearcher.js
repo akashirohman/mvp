@@ -79,7 +79,7 @@ async function searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent) {
 
         let currentPageNum = 1;
         while (currentPageNum <= config.MAX_Google_Search_PAGES && !found) {
-            const searchUrl = `${config.Google Search_URL}${encodeURIComponent(keyword)}&start=${(currentPageNum - 1) * 10}`;
+            const searchUrl = `${config.Google_Search_URL}${encodeURIComponent(keyword)}&start=${(currentPageNum - 1) * 10}`;
             console.log(chalk.gray(`      [Thread] Mencari di Google Page ${currentPageNum} untuk '${keyword}'...`));
             await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: config.REQUEST_TIMEOUT });
             await page.waitForSelector('body', { timeout: 5000 }).catch(() => {}); // Tunggu body dimuat
@@ -110,7 +110,7 @@ async function searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent) {
         }
 
         if (!found) {
-            console.log(chalk.yellow(`      [Thread] URL target tidak ditemukan di ${config.MAX_Google Search_PAGES} halaman pertama Google.`));
+            console.log(chalk.yellow(`      [Thread] URL target tidak ditemukan di ${config.MAX_Google_Search_PAGES} halaman pertama Google.`));
         }
         return found;
 
