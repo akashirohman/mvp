@@ -1,6 +1,6 @@
 // src/main.js
 const readlineSync = require('readline-sync');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 const { createSpinner } = require('ora'); // Opsional, jika ingin spinner
 const proxyManager = require('./proxyManager');
 const googleSearcher = require('./googleSearcher');
@@ -126,10 +126,8 @@ async function main() {
 
 // Jalankan aplikasi
 main().catch(async (error) => {
-    // Ganti baris ini:
+    // Gunakan baris ini:
     console.error(chalk.bgRed(chalk.white('Terjadi kesalahan fatal:')), chalk.white(error.message));
-    // ATAU, jika Anda ingin lebih singkat (tapi pastikan `chalk` terimpor dengan benar):
-    // console.error(chalk.white.bgRed('Terjadi kesalahan fatal:'), chalk.white(error.message));
 
     console.error(error.stack);
     await googleSearcher.closeBrowser(); // Pastikan browser ditutup
