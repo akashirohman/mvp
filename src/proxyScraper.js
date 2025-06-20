@@ -2,7 +2,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const config = require('./config');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 
 /**
  * Mengumpulkan proxy dari berbagai sumber web yang terdaftar di config.js.
