@@ -1,0 +1,19 @@
+{
+  "name": "multi-visitor-pro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js", // <-- Pastikan ini mengarah ke src/main.js
+  "scripts": {
+    "start": "node src/main.js" // <-- Tambahkan script start ini
+  },
+  "keywords": [],
+  "author": "Akashi Rohman",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.x.x",
+    "chalk": "^5.x.x",
+    "cheerio": "^1.0.0-rc.x",
+    "puppeteer": "^22.x.x",
+    "readline-sync": "^1.4.10"
+  }
+}
