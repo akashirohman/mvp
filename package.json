@@ -2,9 +2,9 @@
   "name": "multi-visitor-pro",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js", // <-- Pastikan ini mengarah ke src/main.js
+  "main": "src/main.js",
   "scripts": {
-    "start": "node src/main.js" // <-- Tambahkan script start ini
+    "start": "node src/main.js"
   },
   "keywords": [],
   "author": "Akashi Rohman",
