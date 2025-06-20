@@ -78,7 +78,7 @@ async function searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent) {
 
 
         let currentPageNum = 1;
-        while (currentPageNum <= config.MAX_Google Search_PAGES && !found) {
+        while (currentPageNum <= config.MAX_Google_Search_PAGES && !found) {
             const searchUrl = `${config.Google Search_URL}${encodeURIComponent(keyword)}&start=${(currentPageNum - 1) * 10}`;
             console.log(chalk.gray(`      [Thread] Mencari di Google Page ${currentPageNum} untuk '${keyword}'...`));
             await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: config.REQUEST_TIMEOUT });
