@@ -1,7 +1,7 @@
 // src/proxyValidator.js
 const axios = require('axios');
 const config = require('./config');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 
 /**
  * Memvalidasi sebuah proxy dengan membuat permintaan ke URL pengujian.
