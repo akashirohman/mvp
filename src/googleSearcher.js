@@ -1,7 +1,7 @@
 // src/googleSearcher.js
 const puppeteer = require('puppeteer');
 const config = require('./config');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 
 let browser; // Instansi browser Puppeteer
 
