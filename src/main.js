@@ -1,7 +1,7 @@
 // src/main.js
 const readlineSync = require('readline-sync');
 const chalk = require('chalk').default;
-const { createSpinner } = require('ora'); // Opsional, jika ingin spinner
+const ora = require('ora');
 const proxyManager = require('./proxyManager');
 const googleSearcher = require('./googleSearcher');
 const { startVisitorThread } = require('./visitorCore');
@@ -52,12 +52,12 @@ async function main() {
     displaySlogan();
 
     // Inisialisasi Proxy Manager dan Puppeteer Browser
-    const proxyInitSpinner = createSpinner(chalk.yellow('  [Sistem] Mengumpulkan & memvalidasi proxy Indonesia...')).start();
+    const proxyInitSpinner = ora(chalk.yellow('  [Sistem] Mengumpulkan & memvalidasi proxy Indonesia...')).start();
     await proxyManager.initialize();
     proxyInitSpinner.succeed(chalk.green(`  [Sistem] Proxy siap! ${proxyManager.getProxyCount()} proxy aktif tersedia.`));
 
     // Inisialisasi Puppeteer
-    const puppeteerInitSpinner = createSpinner(chalk.yellow('  [Sistem] Memulai browser untuk pencarian Google...')).start();
+    const puppeteerInitSpinner = ora(chalk.yellow('  [Sistem] Memulai browser untuk pencarian Google...')).start();
     await googleSearcher.initializeBrowser();
     puppeteerInitSpinner.succeed(chalk.green('  [Sistem] Browser Puppeteer siap.'));
 
