@@ -42,8 +42,8 @@ const config = {
             '--window-size=1920,1080',
         ]
     },
-    Google Search_URL: 'https://www.google.com/search?q=', // Perhatikan underscore dan huruf kapital
-    MAX_Google Search_PAGES: 10, // Maksimal halaman Google yang akan dicari
+    Google_Search_URL: 'https://www.google.com/search?q=', // Perhatikan underscore dan huruf kapital
+    MAX_Google_Search_PAGES: 10, // Maksimal halaman Google yang akan dicari
 
     // --- Pengaturan Lainnya ---
     REQUEST_TIMEOUT: 15000, // Timeout umum untuk permintaan HTTP (15 detik)
