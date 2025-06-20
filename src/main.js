@@ -126,7 +126,7 @@ async function main() {
 
 // Jalankan aplikasi
 main().catch(async (error) => {
-    console.error(chalk.bgRed.white('Terjadi kesalahan fatal:'), error.message);
+    console.error(chalk.bgRed.white('Terjadi kesalahan fatal:'), chalk.white(error.message));
     console.error(error.stack);
     await googleSearcher.closeBrowser(); // Pastikan browser ditutup
     process.exit(1);
