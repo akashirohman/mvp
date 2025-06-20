@@ -1,6 +1,6 @@
 // src/visitorCore.js
 const axios = require('axios');
-const chalk = require('chalk');
+const chalk = require('chalk').default;
 const config = require('./config');
 const userAgentManager = require('./userAgentManager');
 const proxyManager = require('./proxyManager');
