@@ -23,40 +23,37 @@ async function startVisitorThread(threadId, targetUrl, keyword, updateStatusCb, 
         let visitSuccess = false;
 
         try {
-            // 1. Ambil Proxy dan User-Agent
             proxy = await proxyManager.getNextProxy();
-            if (!proxy) {
-                updateStatusCb(threadId, chalk.red(`Tidak ada proxy tersedia. Menunggu...`));
-                await new Promise(resolve => setTimeout(resolve, 5000)); // Tunggu 5 detik
-                continue; // Coba lagi di iterasi berikutnya
-            }
+            // Tidak perlu pengecekan `if (!proxy)` di sini karena getNextProxy selalu mengembalikan sesuatu
+
             userAgent = userAgentManager.getRandomUserAgent();
 
-            updateStatusCb(threadId, chalk.white(`Menggunakan Proxy: ${proxy.ip}:${proxy.port} | UA: ${userAgent.substring(0, 30)}...`));
+            // NEW: Sesuaikan pesan status jika tidak menggunakan proxy
+            if (proxy.noProxy) {
+                updateStatusCb(threadId, chalk.red(`Menggunakan IP ASLI VPS (TANPA PROXY) | UA: ${userAgent.substring(0, 30)}...`));
+            } else {
+                updateStatusCb(threadId, chalk.white(`Menggunakan Proxy: ${proxy.ip}:${proxy.port} | UA: ${userAgent.substring(0, 30)}...`));
+            }
 
-            // 2. Lakukan Pencarian Google atau Langsung Kunjungi
-            let actualTargetUrl = targetUrl; // URL yang akan dikunjungi
+
+            // NEW: Konfigurasi proxy untuk Axios. Null jika tidak menggunakan proxy.
+            const axiosProxyConfig = proxy.noProxy ? null : {
+                host: proxy.ip,
+                port: proxy.port,
+                protocol: 'http'
+            };
 
             if (keyword) {
                 updateStatusCb(threadId, chalk.yellow(`Mencari '${keyword}' di Google...`));
+                // Puppeteer akan menggunakan IP asli jika tidak ada argumen --proxy-server
                 const foundInGoogle = await googleSearcher.searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent);
                 if (foundInGoogle) {
-                    updateStatusCb(threadId, chalk.green(`Ditemukan di Google. Mengunjungi ${targetUrl}...`));
-                    // Jika ditemukan di Google, puppeteer sudah mengunjungi,
-                    // tapi kita tetap perlu pastikan Axios bisa mengaksesnya via proxy
-                    // agar logika proxyManager tetap valid
-                    // Atau kita bisa menganggap kunjungan via Puppeteer sudah cukup
-                    // Untuk kesederhanaan awal, anggap Puppeteer sudah mengurus kunjungan jika ditemukan
-                    visitSuccess = true; // Anggap berhasil jika Puppeteer berhasil mengunjungi
+                    updateStatusCb(threadId, chalk.green(`Ditemukan di Google. Mengunjungi ${targetUrl} (via Puppeteer).`));
+                    visitSuccess = true;
                 } else {
-                    updateStatusCb(threadId, chalk.blue(`Tidak ditemukan di Google. Langsung mengunjungi ${targetUrl}...`));
-                    // Jika tidak ditemukan di Google, lanjutkan dengan kunjungan langsung via Axios
+                    updateStatusCb(threadId, chalk.blue(`Tidak ditemukan di Google. Langsung mengunjungi ${targetUrl} (via Axios).`));
                     await axios.get(targetUrl, {
-                        proxy: {
-                            host: proxy.ip,
-                            port: proxy.port,
-                            protocol: 'http'
-                        },
+                        proxy: axiosProxyConfig, // <-- Gunakan konfigurasi proxy yang sudah disesuaikan
                         headers: {
                             'User-Agent': userAgent
                         },
@@ -65,13 +62,9 @@ async function startVisitorThread(threadId, targetUrl, keyword, updateStatusCb, 
                     visitSuccess = true;
                 }
             } else {
-                updateStatusCb(threadId, chalk.blue(`Langsung mengunjungi ${targetUrl}...`));
+                updateStatusCb(threadId, chalk.blue(`Langsung mengunjungi ${targetUrl} (via Axios).`));
                 await axios.get(targetUrl, {
-                    proxy: {
-                        host: proxy.ip,
-                        port: proxy.port,
-                        protocol: 'http'
-                    },
+                    proxy: axiosProxyConfig, // <-- Gunakan konfigurasi proxy yang sudah disesuaikan
                     headers: {
                         'User-Agent': userAgent
                     },
@@ -81,16 +74,16 @@ async function startVisitorThread(threadId, targetUrl, keyword, updateStatusCb, 
             }
 
             if (visitSuccess) {
-                updateStatusCb(threadId, chalk.green(`Berhasil mengunjungi ${actualTargetUrl}.`));
+                updateStatusCb(threadId, chalk.green(`Berhasil mengunjungi ${targetUrl}.`));
             }
 
         } catch (error) {
             updateStatusCb(threadId, chalk.red(`Gagal mengunjungi ${targetUrl}: ${error.message}`));
-            if (proxy) {
+            // Jangan laporkan kegagalan ke proxyManager jika kita sengaja tidak pakai proxy
+            if (!proxy.noProxy && proxy) {
                 proxyManager.reportProxyFailure(proxy);
             }
         } finally {
-            // Jeda acak sebelum rotasi berikutnya untuk simulasi yang lebih alami
             const delay = Math.floor(Math.random() * (config.MAX_VISIT_DELAY_MS - config.MIN_VISIT_DELAY_MS + 1)) + config.MIN_VISIT_DELAY_MS;
             updateStatusCb(threadId, chalk.gray(`Menunggu ${delay / 1000} detik sebelum kunjungan berikutnya...`));
             await new Promise(resolve => setTimeout(resolve, delay));
