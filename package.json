@@ -1,12 +1,12 @@
 {
   "name": "multi-visitor-pro",
   "version": "1.0.0",
-  "description": "",
+  "description": "Multi Visitor Pro by Akashi Rohman",
   "main": "src/main.js",
   "scripts": {
     "start": "node src/main.js"
   },
-  "keywords": [],
+  "keywords": ["scraping", "proxy", "visitor"],
   "author": "Akashi Rohman",
   "license": "ISC",
   "dependencies": {
@@ -14,6 +14,7 @@
     "chalk": "^5.x.x",
     "cheerio": "^1.0.0-rc.x",
     "puppeteer": "^22.x.x",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "ora": "^8.x.x"
   }
 }
