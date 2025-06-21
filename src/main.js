@@ -1,8 +1,11 @@
 // src/main.js
 const readlineSync = require('readline-sync');
-const chalk = require('chalk').default; // <-- PASTIKAN .default
-const ora = require('ora').default; // <-- PASTIKAN .default
-const config = require('./config'); // <-- IMPORT CONFIG AGAR BISA DIAKSES GLOBAL
+const chalk = require('chalk').default; // Pastikan ini .default
+const ora = require('ora').default;     // Pastikan ini .default
+
+// PENTING: Pastikan config di-import di sini sebelum modul lain yang mungkin bergantung padanya
+const config = require('./config'); 
+
 const proxyManager = require('./proxyManager');
 const googleSearcher = require('./googleSearcher');
 const { startVisitorThread } = require('./visitorCore');
@@ -36,7 +39,6 @@ function updateThreadStatus(threadId, statusMessage) {
  * Merender ulang bar status di terminal.
  */
 function renderStatusBar() {
-    // Bersihkan layar dari baris status sebelumnya (kecuali slogan)
     process.stdout.cursorTo(0, 7); // Pindah kursor ke baris setelah slogan + 2 baris kosong
     process.stdout.clearScreenDown(); // Bersihkan dari kursor ke bawah
 
