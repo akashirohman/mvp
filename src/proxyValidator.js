@@ -3,11 +3,6 @@ const axios = require('axios');
 const config = require('./config');
 const chalk = require('chalk').default;
 
-/**
- * Memvalidasi sebuah proxy dengan membuat permintaan ke URL pengujian.
- * @param {{ip: string, port: number}} proxy - Objek proxy.
- * @returns {Promise<{ip: string, port: number, country: string}|null>} Objek proxy yang valid dengan negara, atau null jika gagal.
- */
 async function validateProxy(proxy) {
     const proxyUrl = `http://${proxy.ip}:${proxy.port}`;
     try {
@@ -15,22 +10,22 @@ async function validateProxy(proxy) {
             proxy: {
                 host: proxy.ip,
                 port: proxy.port,
-                protocol: 'http' // atau 'https' jika proxy mendukung
+                protocol: 'http'
             },
             timeout: config.PROXY_VALIDATION_TIMEOUT,
             headers: {
-                'User-Agent': config.USER_AGENTS[0] // Gunakan User-Agent default untuk validasi
+                'User-Agent': config.USER_AGENTS[0]
             }
         });
 
-        // Periksa apakah respons berasal dari IP proxy, bukan IP asli kita
-        // Beberapa proxy transparan mungkin tidak mengubah IP di respons
+        // PASTIKAN BLOK KODE DI BAWAH INI ADALAH YANG AKTIF.
+        // TIDAK BOLEH ADA FILTER `country === 'ID'` lagi.
         if (response.data && response.data.ip && response.data.ip === proxy.ip) {
             const country = response.data.countryCode || response.data.country || 'Unknown';
-            return { ...proxy, country: country }; // Terima proxy dari negara manapun
+            return { ...proxy, country: country }; // Ini akan mengembalikan proxy dari negara manapun
         }
-        // console.log(chalk.red(`    [Proxy Validator] ${proxyUrl} Gagal (Bukan IP Proxy atau Bukan ID)`));
-        return null;
+
+        return null; // Jika response.data.ip tidak cocok dengan proxy.ip atau respons tidak valid
 
     } catch (error) {
         // console.log(chalk.red(`    [Proxy Validator] ${proxyUrl} Gagal: ${error.code || error.message}`));
