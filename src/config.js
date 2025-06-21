@@ -3,13 +3,9 @@
 const config = {
     // --- Pengaturan Proxy ---
     PROXY_SOURCES: [
-        // Pertahankan yang berhasil diakses atau layak dicoba lagi
-        'https://free-proxy-list.net/',  // Ini berhasil diakses
-        'https://www.sslproxies.org/',   // Ini berhasil diakses
-
-        // Coba lagi beberapa yang lebih spesifik Indonesia jika ada atau yang potensial
-        'https://www.proxynova.com/proxy-server-list/country-id/', // Spesifik Indonesia
-        'https://hidemy.name/en/proxy-list/?country=ID#list',     // Spesifik Indonesia
+        'https://free-proxy-list.net/', 
+        'https://www.sslproxies.org/',   
+        'https://hide.mn/en/proxy-list/',     
         'https://proxyscrape.com/free-proxy-list',
     ],
     PROXY_TEST_URL: 'http://ip-api.com/json', // URL untuk menguji konektivitas dan mendapatkan info IP proxy
