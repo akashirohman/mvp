@@ -43,6 +43,7 @@ const config = {
     ],
 
     // --- Pengaturan Puppeteer (untuk Google Search) ---
+    // Definisikan properti args dasar saja dulu. Argumen proxy akan ditambahkan nanti.
     PUPPETEER_LAUNCH_OPTIONS: {
         headless: true,
         args: [
@@ -56,13 +57,10 @@ const config = {
             '--disable-gpu',
             '--disable-infobars',
             '--window-size=1920,1080',
-            // ARGUMEN PROXY PUPPETEER: Aktifkan/nonaktifkan berdasarkan IPROYAL_PROXY.ENABLED
-            // Jika IPROYAL_PROXY.ENABLED adalah true, argumen ini akan ditambahkan secara otomatis:
-            ...(config.IPROYAL_PROXY.ENABLED ? [`--proxy-server=${config.IPROYAL_PROXY.PROTOCOL}://${config.IPROYAL_PROXY.HOST}:${config.IPROYAL_PROXY.PORT}`] : []),
         ]
     },
-    Google_Search_URL: 'https://www.google.com/search?q=',
-    MAX_Google_Search_PAGES: 10,
+    Google Search_URL: 'https://www.google.com/search?q=',
+    MAX_Google Search_PAGES: 10,
 
     // --- Pengaturan Lainnya ---
     REQUEST_TIMEOUT: 15000, // Timeout umum untuk permintaan HTTP (15 detik)
@@ -71,5 +69,12 @@ const config = {
     MAX_PROXY_FAILURES: 3, // Berapa kali proxy gratis bisa gagal sebelum dihapus sementara
     PROXY_RETRY_INTERVAL_MS: 300000, // Waktu (5 menit) sebelum mencoba proxy gagal lagi
 };
+
+// Setelah objek `config` sepenuhnya didefinisikan, barulah kita tambahkan argumen proxy.
+if (config.IPROYAL_PROXY.ENABLED) {
+    config.PUPPETEER_LAUNCH_OPTIONS.args.push(
+        `--proxy-server=${config.IPROYAL_PROXY.PROTOCOL}://${config.IPROYAL_PROXY.HOST}:${config.IPROYAL_PROXY.PORT}`
+    );
+}
 
 module.exports = config;
