@@ -61,8 +61,8 @@ const config = {
             ...(config.IPROYAL_PROXY.ENABLED ? [`--proxy-server=${config.IPROYAL_PROXY.PROTOCOL}://${config.IPROYAL_PROXY.HOST}:${config.IPROYAL_PROXY.PORT}`] : []),
         ]
     },
-    Google Search_URL: 'https://www.google.com/search?q=',
-    MAX_Google Search_PAGES: 10,
+    Google_Search_URL: 'https://www.google.com/search?q=',
+    MAX_Google_Search_PAGES: 10,
 
     // --- Pengaturan Lainnya ---
     REQUEST_TIMEOUT: 15000, // Timeout umum untuk permintaan HTTP (15 detik)
