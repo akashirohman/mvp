@@ -70,7 +70,7 @@ async function searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent) {
         let currentPageNum = 1;
         let found = false;
 
-        while (currentPageNum <= config.MAX_Google Search_PAGES && !found) {
+        while (currentPageNum <= config.MAX_Google_Search_PAGES && !found) {
             // Perbarui URL pencarian untuk halaman berikutnya jika ada
             const currentSearchPageUrl = `${config.Google Search_URL}${encodeURIComponent(keyword)}&start=${(currentPageNum - 1) * 10}`;
             if (currentPageNum > 1) { // Hanya navigate jika bukan halaman pertama atau sudah di halaman berikutnya
@@ -108,7 +108,7 @@ async function searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent) {
         }
 
         if (!found) {
-            console.log(chalk.yellow(`      [Thread] URL target tidak ditemukan di ${config.MAX_Google Search_PAGES} halaman pertama Google.`));
+            console.log(chalk.yellow(`      [Thread] URL target tidak ditemukan di ${config.MAX_Google_Search_PAGES} halaman pertama Google.`));
         }
         return found;
 
