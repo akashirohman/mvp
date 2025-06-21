@@ -55,7 +55,7 @@ class ProxyManager {
         this.activeProxies = tempActiveProxies;
         this.proxyQueue = [...this.activeProxies]; // Isi antrean dengan proxy baru
 
-        console.log(chalk.green(`  [Proxy Manager] Selesai validasi. Total ${validProxiesCount} proxy aktif (Indonesia) ditemukan.`));
+        console.log(chalk.green(`  [Proxy Manager] Selesai validasi. Total ${validProxiesCount} proxy aktif ditemukan.`));
         if (this.activeProxies.length < this.minRequiredProxies) {
             console.warn(chalk.yellow(`  [Proxy Manager] Peringatan: Jumlah proxy aktif (${this.activeProxies.length}) di bawah batas minimum (${this.minRequiredProxies}).`));
         }
