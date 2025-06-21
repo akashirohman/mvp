@@ -72,13 +72,16 @@ class ProxyManager {
      */
     async getNextProxy() {
         if (this.proxyQueue.length === 0) {
-            console.warn(chalk.yellow('  [Proxy Manager] Antrean proxy kosong, mencoba merefresh proxy...'));
-            await this.refreshProxies(); // Coba refresh jika antrean kosong
-            if (this.proxyQueue.length === 0) {
-                console.error(chalk.red('  [Proxy Manager] Gagal mendapatkan proxy setelah refresh. Tidak ada proxy yang tersedia.'));
-                return null;
-            }
+            console.warn(chalk.yellow('  [Proxy Manager] Antrean proxy kosong.'));
+            // NEW: Jika tidak ada proxy, kembalikan objek "tanpa proxy"
+            // Ini akan membuat permintaan menggunakan IP asli VPS
+            console.warn(chalk.yellow('  [Proxy Manager] Melanjutkan TANPA PROXY untuk pengujian.'));
+            return { ip: 'localhost', port: 0, protocol: 'http', noProxy: true };
         }
+
+        this.lastRotationIndex = (this.lastRotationIndex + 1) % this.proxyQueue.length;
+        return this.proxyQueue[this.lastRotationIndex];
+    }
 
         // Rotasi sederhana (round-robin)
         this.lastRotationIndex = (this.lastRotationIndex + 1) % this.proxyQueue.length;
