@@ -9,32 +9,54 @@ class ProxyManager {
         this.activeProxies = []; // Proxy yang siap digunakan
         this.failedProxies = new Map(); // Map: { 'ip:port': { failures: int, lastFailed: timestamp } }
         this.isScraping = false; // Flag untuk mencegah scraping ganda
-        this.minRequiredProxies = 10; // Jumlah minimal proxy yang dibutuhkan (untuk proxy gratis)
+        this.minRequiredProxies = 10; // Jumlah minimal proxy aktif yang dibutuhkan (untuk proxy gratis)
         this.proxyQueue = []; // Antrean proxy yang akan digunakan
         this.lastRotationIndex = -1; // Untuk rotasi berurutan
 
-        // Bagian IPRoyal dinonaktifkan di config.js, jadi fokus ke proxy gratis.
-        // Jika Anda ingin kembali ke IPRoyal, aktifkan kembali di config.js
-        // dan sesuaikan kode ini dengan yang sebelumnya saya berikan untuk IPRoyal.
+        // Inisialisasi proxy IPRoyal jika diaktifkan di config.js
+        if (config.IPROYAL_PROXY.ENABLED) {
+            this.activeProxies.push({
+                ip: config.IPROYAL_PROXY.HOST,
+                port: config.IPROYAL_PROXY.PORT,
+                auth: {
+                    username: config.IPROYAL_PROXY.USERNAME,
+                    password: config.IPROYAL_PROXY.PASSWORD
+                },
+                protocol: config.IPROYAL_PROXY.PROTOCOL,
+                isIProyal: true // Penanda bahwa ini adalah proxy IPRoyal
+            });
+            this.proxyQueue = [...this.activeProxies]; // Isi antrean dengan proxy IPRoyal
+            console.log(chalk.magenta('  [Proxy Manager] Menggunakan IPRoyal Proxy Gateway.'));
+        }
     }
 
     /**
      * Memulai proses scraping dan validasi proxy secara periodik.
+     * Jika IPRoyal diaktifkan, tidak perlu scraping/validasi proxy gratis.
      */
     async initialize() {
-        // Logika IPRoyal dinonaktifkan, jadi langsung inisialisasi proxy gratis
+        if (config.IPROYAL_PROXY.ENABLED) {
+            console.log(chalk.magenta('  [Proxy Manager] IPRoyal Proxy sudah diinisialisasi. Melewatkan pengumpulan proxy gratis.'));
+            return; // Tidak perlu scraping atau validasi jika IPRoyal aktif
+        }
+
+        // Lanjutkan dengan logika scraping dan validasi proxy gratis jika IPRoyal tidak aktif
         console.log(chalk.magenta('  [Proxy Manager] Memulai inisialisasi proxy gratis...'));
         await this.refreshProxies();
 
-        // Anda bisa aktifkan kembali jadwal refresh berkala jika perlu
-        // setInterval(() => this.refreshProxies(), 1800000); // Contoh: setiap 30 menit
+        // Jadwalkan refresh proxy berkala jika diperlukan (misal setiap 30 menit)
+        // setInterval(() => this.refreshProxies(), 1800000); // 30 menit
     }
 
     /**
      * Mengumpulkan dan memvalidasi proxy baru, serta membersihkan proxy yang gagal.
      */
     async refreshProxies() {
-        // Logika IPRoyal dinonaktifkan, jadi langsung scraping dan validasi gratis
+        if (config.IPROYAL_PROXY.ENABLED) {
+            console.log(chalk.gray('  [Proxy Manager] IPRoyal Proxy aktif, melewati refresh proxy gratis.'));
+            return;
+        }
+        
         if (this.isScraping) {
             console.log(chalk.gray('  [Proxy Manager] Proses scraping proxy sedang berjalan, melewati refresh.'));
             return;
@@ -61,7 +83,6 @@ class ProxyManager {
         this.activeProxies = tempActiveProxies;
         this.proxyQueue = [...this.activeProxies]; // Isi antrean dengan proxy baru
 
-        // Pesan log yang sudah diubah agar tidak menyebut "Indonesia"
         console.log(chalk.green(`  [Proxy Manager] Selesai validasi. Total ${validProxiesCount} proxy aktif ditemukan.`));
         if (this.activeProxies.length < this.minRequiredProxies) {
             console.warn(chalk.yellow(`  [Proxy Manager] Peringatan: Jumlah proxy aktif (${this.activeProxies.length}) di bawah batas minimum (${this.minRequiredProxies}).`));
@@ -74,14 +95,21 @@ class ProxyManager {
 
     /**
      * Mengambil proxy berikutnya dari antrean secara round-robin.
-     * Jika antrean kosong, mengembalikan objek "tanpa proxy" untuk pengujian.
-     * @returns {Promise<{ip: string, port: number, protocol: string, noProxy?: boolean}|null>} Objek proxy atau objek "tanpa proxy".
+     * Jika antrean kosong (dan IPRoyal tidak aktif), mengembalikan objek "tanpa proxy" untuk pengujian.
+     * @returns {Promise<{ip: string, port: number, protocol: string, auth?: object, isIProyal?: boolean, noProxy?: boolean}|null>} Objek proxy.
      */
     async getNextProxy() {
         if (this.proxyQueue.length === 0) {
-            console.warn(chalk.yellow('  [Proxy Manager] Antrean proxy kosong.'));
-            console.warn(chalk.yellow('  [Proxy Manager] Melanjutkan TANPA PROXY untuk pengujian fungsionalitas bot.'));
-            return { ip: 'localhost', port: 0, protocol: 'http', noProxy: true }; // Objek "tanpa proxy"
+            // Jika IPRoyal tidak aktif dan proxyQueue kosong, berarti tidak ada proxy gratis.
+            if (!config.IPROYAL_PROXY.ENABLED) {
+                console.warn(chalk.yellow('  [Proxy Manager] Antrean proxy kosong.'));
+                console.warn(chalk.yellow('  [Proxy Manager] Melanjutkan TANPA PROXY untuk pengujian fungsionalitas bot.'));
+                return { ip: 'localhost', port: 0, protocol: 'http', noProxy: true }; // Objek "tanpa proxy"
+            }
+            // Jika IPRoyal aktif tapi proxyQueue kosong (harusnya tidak terjadi jika IPRoyal terinisialisasi)
+            // Ini bisa jadi fallback jika inisialisasi IPRoyal gagal
+            console.error(chalk.red('  [Proxy Manager] Gagal mendapatkan proxy. IPRoyal diaktifkan tetapi proxyQueue kosong.'));
+            return null;
         }
 
         this.lastRotationIndex = (this.lastRotationIndex + 1) % this.proxyQueue.length;
@@ -90,17 +118,20 @@ class ProxyManager {
 
     /**
      * Melaporkan kegagalan penggunaan sebuah proxy.
-     * Proxy akan dihapus dari daftar aktif jika gagal terlalu sering.
+     * Proxy akan dihapus dari daftar aktif jika gagal terlalu sering, kecuali IPRoyal gateway atau mode noProxy.
      * @param {{ip: string, port: number, isIProyal?: boolean, noProxy?: boolean}} proxy - Objek proxy yang gagal.
      */
     reportProxyFailure(proxy) {
-        // Jika menggunakan objek "tanpa proxy" untuk pengujian, jangan laporkan kegagalan
+        // Jangan laporkan kegagalan untuk proxy IPRoyal atau mode tanpa proxy
+        if (proxy.isIProyal) {
+            console.warn(chalk.yellow(`  [Proxy Manager] IPRoyal Gateway (${proxy.ip}:${proxy.port}) gagal. Ini mungkin masalah sementara atau blokir dari target. Tidak menghapus gateway.`));
+            return;
+        }
         if (proxy.noProxy) {
             // console.log(chalk.gray('  [Proxy Manager] Tidak melaporkan kegagalan untuk mode tanpa proxy.'));
             return;
         }
 
-        // Logika IPRoyal dinonaktifkan, jadi langsung proses proxy gratis
         const proxyKey = `${proxy.ip}:${proxy.port}`;
         const failureInfo = this.failedProxies.get(proxyKey) || { failures: 0, lastFailed: 0 };
 
