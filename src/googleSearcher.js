@@ -62,7 +62,7 @@ async function searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent) {
             await page.authenticate(null); 
         }
 
-        const searchUrl = `${config.Google Search_URL}${encodeURIComponent(keyword)}`;
+        const searchUrl = `${config.Google_Search_URL}${encodeURIComponent(keyword)}`;
         console.log(chalk.gray(`      [Thread] Mengunjungi Google untuk mencari '${keyword}'...`));
         await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: config.REQUEST_TIMEOUT });
         await page.waitForSelector('body', { timeout: 5000 }).catch(() => {}); // Tunggu body dimuat
