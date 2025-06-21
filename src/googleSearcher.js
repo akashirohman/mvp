@@ -72,7 +72,7 @@ async function searchGoogleAndVisit(keyword, targetUrl, proxy, userAgent) {
 
         while (currentPageNum <= config.MAX_Google_Search_PAGES && !found) {
             // Perbarui URL pencarian untuk halaman berikutnya jika ada
-            const currentSearchPageUrl = `${config.Google Search_URL}${encodeURIComponent(keyword)}&start=${(currentPageNum - 1) * 10}`;
+            const currentSearchPageUrl = `${config.Google_Search_URL}${encodeURIComponent(keyword)}&start=${(currentPageNum - 1) * 10}`;
             if (currentPageNum > 1) { // Hanya navigate jika bukan halaman pertama atau sudah di halaman berikutnya
                 console.log(chalk.gray(`      [Thread] Mencari di Google Page ${currentPageNum} untuk '${keyword}'...`));
                 await page.goto(currentSearchPageUrl, { waitUntil: 'domcontentloaded', timeout: config.REQUEST_TIMEOUT });
