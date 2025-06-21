@@ -26,12 +26,8 @@ async function validateProxy(proxy) {
         // Periksa apakah respons berasal dari IP proxy, bukan IP asli kita
         // Beberapa proxy transparan mungkin tidak mengubah IP di respons
         if (response.data && response.data.ip && response.data.ip === proxy.ip) {
-            // Jika proxy test URL memberikan info negara, ambil itu
             const country = response.data.countryCode || response.data.country || 'Unknown';
-            if (country === 'ID' || country === 'Indonesia') { // Pastikan ini proxy Indonesia
-                // console.log(chalk.green(`    [Proxy Validator] ${proxyUrl} OK (${country})`));
-                return { ...proxy, country: country };
-            }
+            return { ...proxy, country: country }; // Terima proxy dari negara manapun
         }
         // console.log(chalk.red(`    [Proxy Validator] ${proxyUrl} Gagal (Bukan IP Proxy atau Bukan ID)`));
         return null;
