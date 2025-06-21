@@ -3,13 +3,14 @@
 const config = {
     // --- Pengaturan Proxy ---
     PROXY_SOURCES: [
-        'https://free-proxy-list.net/', 
-        'https://www.sslproxies.org/',
-        'http://www.proxy-list.net/',
-        'http://www.gatherproxy.com/',
-        'https://www.mkproxy.com/free-proxy-list',
-        'https://free.proxy.com.kz/',
-        'http://proxyfish.com/proxies/',
+        // Pertahankan yang berhasil diakses atau layak dicoba lagi
+        'https://free-proxy-list.net/',  // Ini berhasil diakses
+        'https://www.sslproxies.org/',   // Ini berhasil diakses
+
+        // Coba lagi beberapa yang lebih spesifik Indonesia jika ada atau yang potensial
+        'https://www.proxynova.com/proxy-server-list/country-id/', // Spesifik Indonesia
+        'https://hidemy.name/en/proxy-list/?country=ID#list',     // Spesifik Indonesia
+        'https://proxyscrape.com/free-proxy-list',
     ],
     PROXY_TEST_URL: 'http://ip-api.com/json', // URL untuk menguji konektivitas dan mendapatkan info IP proxy
     PROXY_VALIDATION_TIMEOUT: 5000, // Timeout dalam ms untuk validasi proxy
