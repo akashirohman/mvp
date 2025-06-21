@@ -2,6 +2,7 @@
 const readlineSync = require('readline-sync');
 const chalk = require('chalk').default; // <-- PASTIKAN .default
 const ora = require('ora').default; // <-- PASTIKAN .default
+const config = require('./config'); // <-- IMPORT CONFIG AGAR BISA DIAKSES GLOBAL
 const proxyManager = require('./proxyManager');
 const googleSearcher = require('./googleSearcher');
 const { startVisitorThread } = require('./visitorCore');
@@ -52,7 +53,7 @@ async function main() {
     displaySlogan();
 
     const proxyInitSpinner = ora(chalk.yellow('  [Sistem] Mengumpulkan & memvalidasi proxy...')).start();
-    await proxyManager.initialize();
+    await proxyManager.initialize(); // Panggil initialize() yang sudah mengandung logika IPRoyal/gratis
     const activeProxiesCount = proxyManager.getProxyCount(); // Ambil jumlah proxy yang ditemukan
     proxyInitSpinner.succeed(chalk.green(`  [Sistem] Proxy siap! ${activeProxiesCount} proxy aktif tersedia.`));
 
