@@ -3,13 +3,13 @@
 const config = {
     // --- Pengaturan Proxy ---
     PROXY_SOURCES: [
-        // Daftar URL penyedia proxy Indonesia atau umum
-        // Ini adalah contoh, Anda mungkin perlu mencari sumber terbaru yang aktif
-        'https://free-proxy-list.net/', // Sumber proxy umum
-        'https://www.sslproxies.org/',  // Sumber proxy SSL/HTTPS
-        // 'https://proxyelite.info/free-proxy-list/indonesia/', // Contoh, perlu dicek keaktifannya
-        // 'https://proxyscrape.com/free-proxy-list', // Contoh, perlu dicek keaktifannya
-        // Anda bisa menambahkan sumber lain yang spesifik untuk Indonesia jika ditemukan
+        'https://free-proxy-list.net/', 
+        'https://www.sslproxies.org/',
+        'http://www.proxy-list.net/',
+        'http://www.gatherproxy.com/',
+        'https://www.mkproxy.com/free-proxy-list',
+        'https://free.proxy.com.kz/',
+        'http://proxyfish.com/proxies/',
     ],
     PROXY_TEST_URL: 'http://ip-api.com/json', // URL untuk menguji konektivitas dan mendapatkan info IP proxy
     PROXY_VALIDATION_TIMEOUT: 5000, // Timeout dalam ms untuk validasi proxy
