@@ -9,7 +9,7 @@ const config = {
         'https://proxyscrape.com/free-proxy-list',
     ],
     PROXY_TEST_URL: 'http://ip-api.com/json', // URL untuk menguji konektivitas dan mendapatkan info IP proxy
-    PROXY_VALIDATION_TIMEOUT: 5000, // Timeout dalam ms untuk validasi proxy
+    PROXY_VALIDATION_TIMEOUT: 15000, // Timeout dalam ms untuk validasi proxy
 
     // --- Pengaturan User-Agent ---
     USER_AGENTS: [
