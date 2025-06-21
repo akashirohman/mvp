@@ -84,9 +84,13 @@ class ProxyManager {
     }
 
         // Rotasi sederhana (round-robin)
-        this.lastRotationIndex = (this.lastRotationIndex + 1) % this.proxyQueue.length;
-        return this.proxyQueue[this.lastRotationIndex];
+        return { ip: 'localhost', port: 0, protocol: 'http', noProxy: true };
     }
+
+    // BARIS INI (atau di sekitarnya) YANG PERLU DIPERIKSA
+    this.lastRotationIndex = (this.lastRotationIndex + 1) % this.proxyQueue.length;
+    return this.proxyQueue[this.lastRotationIndex];
+}
 
     /**
      * Melaporkan kegagalan penggunaan sebuah proxy.
