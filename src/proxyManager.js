@@ -2,7 +2,7 @@
 const { scrapeProxies } = require('./proxyScraper');
 const { validateProxy } = require('./proxyValidator');
 const config = require('./config');
-const chalk = require('chalk').default; // Pastikan ini sudah .default
+const chalk = require('chalk').default; // <-- PASTIKAN .default
 
 class ProxyManager {
     constructor() {
@@ -12,9 +12,16 @@ class ProxyManager {
         this.minRequiredProxies = 10; // Jumlah minimal proxy aktif yang dibutuhkan (untuk proxy gratis)
         this.proxyQueue = []; // Antrean proxy yang akan digunakan
         this.lastRotationIndex = -1; // Untuk rotasi berurutan
+    }
 
-        // Inisialisasi proxy IPRoyal jika diaktifkan di config.js
+    /**
+     * Memulai proses scraping dan validasi proxy secara periodik.
+     * Termasuk inisialisasi IPRoyal jika diaktifkan.
+     */
+    async initialize() {
+        // Pindahkan logika IPRoyal ke sini untuk memastikan `config` sudah dimuat
         if (config.IPROYAL_PROXY.ENABLED) {
+            this.activeProxies = []; // Pastikan ini kosong sebelum diisi IPRoyal
             this.activeProxies.push({
                 ip: config.IPROYAL_PROXY.HOST,
                 port: config.IPROYAL_PROXY.PORT,
@@ -27,17 +34,8 @@ class ProxyManager {
             });
             this.proxyQueue = [...this.activeProxies]; // Isi antrean dengan proxy IPRoyal
             console.log(chalk.magenta('  [Proxy Manager] Menggunakan IPRoyal Proxy Gateway.'));
-        }
-    }
-
-    /**
-     * Memulai proses scraping dan validasi proxy secara periodik.
-     * Jika IPRoyal diaktifkan, tidak perlu scraping/validasi proxy gratis.
-     */
-    async initialize() {
-        if (config.IPROYAL_PROXY.ENABLED) {
             console.log(chalk.magenta('  [Proxy Manager] IPRoyal Proxy sudah diinisialisasi. Melewatkan pengumpulan proxy gratis.'));
-            return; // Tidak perlu scraping atau validasi jika IPRoyal aktif
+            return;
         }
 
         // Lanjutkan dengan logika scraping dan validasi proxy gratis jika IPRoyal tidak aktif
