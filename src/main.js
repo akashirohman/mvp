@@ -1,7 +1,7 @@
 // src/main.js
 const readlineSync = require('readline-sync');
-const chalk = require('chalk').default;
-const ora = require('ora').default;
+const chalk = require('chalk').default; // <-- PASTIKAN .default
+const ora = require('ora').default; // <-- PASTIKAN .default
 const proxyManager = require('./proxyManager');
 const googleSearcher = require('./googleSearcher');
 const { startVisitorThread } = require('./visitorCore');
@@ -51,12 +51,16 @@ function renderStatusBar() {
 async function main() {
     displaySlogan();
 
-    // Inisialisasi Proxy Manager dan Puppeteer Browser
-    const proxyInitSpinner = ora(chalk.yellow('  [Sistem] Mengumpulkan & memvalidasi proxy Indonesia...')).start();
+    const proxyInitSpinner = ora(chalk.yellow('  [Sistem] Mengumpulkan & memvalidasi proxy...')).start();
     await proxyManager.initialize();
-    proxyInitSpinner.succeed(chalk.green(`  [Sistem] Proxy siap! ${proxyManager.getProxyCount()} proxy aktif tersedia.`));
+    const activeProxiesCount = proxyManager.getProxyCount(); // Ambil jumlah proxy yang ditemukan
+    proxyInitSpinner.succeed(chalk.green(`  [Sistem] Proxy siap! ${activeProxiesCount} proxy aktif tersedia.`));
 
-    // Inisialisasi Puppeteer
+    // Jika tidak ada proxy aktif dan tidak menggunakan IPRoyal, beri notifikasi akan berjalan tanpa proxy
+    if (activeProxiesCount === 0 && !config.IPROYAL_PROXY.ENABLED) {
+        console.warn(chalk.yellow('  [Sistem] Tidak ada proxy aktif ditemukan. Bot akan berjalan tanpa proxy.'));
+    }
+
     const puppeteerInitSpinner = ora(chalk.yellow('  [Sistem] Memulai browser untuk pencarian Google...')).start();
     await googleSearcher.initializeBrowser();
     puppeteerInitSpinner.succeed(chalk.green('  [Sistem] Browser Puppeteer siap.'));
@@ -100,7 +104,7 @@ async function main() {
     threads = [];
     for (let i = 0; i < numThreads; i++) {
         const threadId = i + 1;
-        appStatus.set(threadId, chalk.gray('Menunggu untuk memulai...'));
+        appStatus.set(threadId, chalk.gray('Menunggu untuk memulai...')); // Status awal
         threads.push(startVisitorThread(threadId, targetUrl, keyword, updateThreadStatus, stopSignal));
     }
     renderStatusBar(); // Tampilkan status awal
@@ -126,9 +130,7 @@ async function main() {
 
 // Jalankan aplikasi
 main().catch(async (error) => {
-    // Gunakan baris ini:
     console.error(chalk.bgRed(chalk.white('Terjadi kesalahan fatal:')), chalk.white(error.message));
-
     console.error(error.stack);
     await googleSearcher.closeBrowser(); // Pastikan browser ditutup
     process.exit(1);
