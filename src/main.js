@@ -1,17 +1,20 @@
 // src/main.js
 const readlineSync = require('readline-sync');
-const chalk = require('chalk').default; // Pastikan ini .default
-const ora = require('ora').default;     // Pastikan ini .default
+const chalk = require('chalk').default;
+const ora = require('ora').default;
 
-// PENTING: Pastikan config di-import di sini sebelum modul lain yang mungkin bergantung padanya
-const config = require('./config'); 
+const config = require('./config'); // Pastikan config diimpor di sini
 
-const proxyManager = require('./proxyManager');
+// NEW: Impor kelas ProxyManager (bukan instansinya)
+const ProxyManager = require('./proxyManager'); 
 const googleSearcher = require('./googleSearcher');
 const { startVisitorThread } = require('./visitorCore');
 
-const appStatus = new Map(); // Map untuk menyimpan status setiap thread: { threadId: 'status_message' }
-let threads = []; // Array untuk menyimpan semua promise thread
+// NEW: Buat instansi ProxyManager dengan meneruskan objek config
+const proxyManager = new ProxyManager(config);
+
+const appStatus = new Map();
+let threads = [];
 let stopSignal = { isStopped: false };
 
 /**
@@ -39,8 +42,8 @@ function updateThreadStatus(threadId, statusMessage) {
  * Merender ulang bar status di terminal.
  */
 function renderStatusBar() {
-    process.stdout.cursorTo(0, 7); // Pindah kursor ke baris setelah slogan + 2 baris kosong
-    process.stdout.clearScreenDown(); // Bersihkan dari kursor ke bawah
+    process.stdout.cursorTo(0, 7);
+    process.stdout.clearScreenDown();
 
     appStatus.forEach((status, id) => {
         console.log(chalk.white(`[Thread ${String(id).padStart(2, '0')}] ${status}`));
@@ -56,7 +59,7 @@ async function main() {
 
     const proxyInitSpinner = ora(chalk.yellow('  [Sistem] Mengumpulkan & memvalidasi proxy...')).start();
     await proxyManager.initialize(); // Panggil initialize() yang sudah mengandung logika IPRoyal/gratis
-    const activeProxiesCount = proxyManager.getProxyCount(); // Ambil jumlah proxy yang ditemukan
+    const activeProxiesCount = proxyManager.getProxyCount();
     proxyInitSpinner.succeed(chalk.green(`  [Sistem] Proxy siap! ${activeProxiesCount} proxy aktif tersedia.`));
 
     // Jika tidak ada proxy aktif dan tidak menggunakan IPRoyal, beri notifikasi akan berjalan tanpa proxy
@@ -107,10 +110,10 @@ async function main() {
     threads = [];
     for (let i = 0; i < numThreads; i++) {
         const threadId = i + 1;
-        appStatus.set(threadId, chalk.gray('Menunggu untuk memulai...')); // Status awal
+        appStatus.set(threadId, chalk.gray('Menunggu untuk memulai...'));
         threads.push(startVisitorThread(threadId, targetUrl, keyword, updateThreadStatus, stopSignal));
     }
-    renderStatusBar(); // Tampilkan status awal
+    renderStatusBar();
 
     // Loop untuk menunggu perintah stop
     while (command !== 'stop') {
@@ -135,6 +138,6 @@ async function main() {
 main().catch(async (error) => {
     console.error(chalk.bgRed(chalk.white('Terjadi kesalahan fatal:')), chalk.white(error.message));
     console.error(error.stack);
-    await googleSearcher.closeBrowser(); // Pastikan browser ditutup
+    await googleSearcher.closeBrowser();
     process.exit(1);
 });
